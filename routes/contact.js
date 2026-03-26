@@ -1,5 +1,6 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
+const axios = require('axios');
 const router = express.Router();
 
 const transporter = nodemailer.createTransport({
@@ -16,12 +17,12 @@ async function verifyRecaptcha(token) {
   const secret = process.env.RECAPTCHA_SECRET_KEY;
   if (!secret) return { success: true, score: 1 };
 
-  const res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`,
-  });
-  return res.json();
+  const { data } = await axios.post(
+    'https://www.google.com/recaptcha/api/siteverify',
+    `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`,
+    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+  );
+  return data;
 }
 
 router.post('/', async (req, res) => {
