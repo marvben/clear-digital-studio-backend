@@ -43,14 +43,11 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ success: false, errors });
     }
 
-    // reCAPTCHA verification
-    if (process.env.RECAPTCHA_SECRET_KEY) {
-      if (!recaptchaToken) {
-        return res.status(400).json({ success: false, errors: ['reCAPTCHA verification failed'] });
-      }
+    // reCAPTCHA verification (skip if no token — don't block real users)
+    if (process.env.RECAPTCHA_SECRET_KEY && recaptchaToken) {
       const captchaResult = await verifyRecaptcha(recaptchaToken);
       if (!captchaResult.success || (captchaResult.score && captchaResult.score < 0.5)) {
-        return res.status(400).json({ success: false, errors: ['reCAPTCHA verification failed'] });
+        return res.status(400).json({ success: false, errors: ['Spam detected. Please try again.'] });
       }
     }
 
