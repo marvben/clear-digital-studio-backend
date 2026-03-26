@@ -1,39 +1,34 @@
 const express = require('express');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const axios = require('axios');
 const router = express.Router();
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function verifyRecaptcha(token) {
   const secret = process.env.RECAPTCHA_SECRET_KEY;
   if (!secret) return { success: true, score: 1 };
 
-  const { data } = await axios.post('https://www.google.com/recaptcha/api/siteverify', `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`, {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  });
-  return data;
+  try {
+    const { data } = await axios.post('https://www.google.com/recaptcha/api/siteverify', new URLSearchParams({ secret, response: token }).toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+    console.log('reCAPTCHA response:', JSON.stringify(data));
+    return data;
+  } catch (err) {
+    console.error('reCAPTCHA verification request failed:', err.message);
+    return { success: true, score: 1 };
+  }
 }
 
 router.post('/', async (req, res) => {
   try {
     const { name, email, business, phone, projectType, budget, message, recaptchaToken, website } = req.body;
 
-    // Honeypot check — hidden field should be empty
     if (website) {
-      // Bot filled the honeypot — return success silently
       return res.status(200).json({ success: true, message: 'Message received.' });
     }
 
-    // Validate required fields
     const errors = [];
     if (!name || !name.trim()) errors.push('Name is required');
     if (!email || !email.trim()) errors.push('Email is required');
@@ -43,7 +38,6 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ success: false, errors });
     }
 
-    // reCAPTCHA verification (skip if no token — don't block real users)
     if (process.env.RECAPTCHA_SECRET_KEY && recaptchaToken) {
       const captchaResult = await verifyRecaptcha(recaptchaToken);
       if (!captchaResult.success || (captchaResult.score && captchaResult.score < 0.5)) {
@@ -51,8 +45,9 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // Build email
     const toEmail = process.env.CONTACT_TO_EMAIL || 'hello@cleardigitalstudio.ca';
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Clear Digital Studio <noreply@cleardigitalstudio.ca>';
+
     const htmlBody = `
       <h2>New Contact Form Submission</h2>
       <table style="border-collapse:collapse;width:100%;max-width:600px;">
@@ -67,20 +62,24 @@ router.post('/', async (req, res) => {
       <p style="margin-top:16px;color:#999;font-size:12px;">Sent from cleardigitalstudio.ca contact form at ${new Date().toISOString()}</p>
     `;
 
-    // Send email if SMTP is configured
-    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-      await transporter.sendMail({
-        from: `"Clear Digital Studio" <${process.env.SMTP_USER}>`,
-        replyTo: email,
+    if (process.env.RESEND_API_KEY) {
+      const { error } = await resend.emails.send({
+        from: fromEmail,
         to: toEmail,
-        subject: `New inquiry from ${name} — ${business}`,
+        replyTo: email,
+        subject: `New inquiry from ${name} - ${business}`,
         html: htmlBody,
       });
+
+      if (error) {
+        console.error('Resend error:', error);
+        return res.status(500).json({ success: false, errors: ['Failed to send email. Please try again.'] });
+      }
     } else {
-      console.log('--- New Contact Submission (SMTP not configured) ---');
+      console.log('--- New Contact Submission (Resend not configured) ---');
       console.log({ name, email, business, phone, projectType, budget, message });
       console.log('Received at:', new Date().toISOString());
-      console.log('---------------------------------------------------');
+      console.log('-----------------------------------------------------');
     }
 
     res.status(200).json({ success: true, message: "Message received. We'll be in touch." });
