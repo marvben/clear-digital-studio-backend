@@ -17,21 +17,15 @@ async function verifyRecaptcha(token) {
   const secret = process.env.RECAPTCHA_SECRET_KEY;
   if (!secret) return { success: true, score: 1 };
 
-  const { data } = await axios.post(
-    'https://www.google.com/recaptcha/api/siteverify',
-    `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`,
-    { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-  );
+  const { data } = await axios.post('https://www.google.com/recaptcha/api/siteverify', `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`, {
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  });
   return data;
 }
 
 router.post('/', async (req, res) => {
   try {
-    const {
-      name, email, business, phone,
-      projectType, budget, message,
-      recaptchaToken, website,
-    } = req.body;
+    const { name, email, business, phone, projectType, budget, message, recaptchaToken, website } = req.body;
 
     // Honeypot check — hidden field should be empty
     if (website) {
@@ -92,7 +86,7 @@ router.post('/', async (req, res) => {
       console.log('---------------------------------------------------');
     }
 
-    res.status(200).json({ success: true, message: 'Message received. We\'ll be in touch.' });
+    res.status(200).json({ success: true, message: "Message received. We'll be in touch." });
   } catch (err) {
     console.error('Contact form error:', err);
     res.status(500).json({ success: false, errors: ['Something went wrong. Please try again.'] });
@@ -100,11 +94,7 @@ router.post('/', async (req, res) => {
 });
 
 function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 module.exports = router;
