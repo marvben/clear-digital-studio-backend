@@ -1,0 +1,68 @@
+[
+  {
+    "id": "proplumb",
+    "slug": "proplumb-services",
+    "title": "ProPlumb Services",
+    "category": "Plumbing",
+    "location": "Toronto",
+    "tag": "Plumbing · Toronto",
+    "result": "New website + local SEO delivered +187% more calls within 3 months of launch.",
+    "services": "Website + SEO + Maintenance",
+    "featured": true
+  },
+  {
+    "id": "lumiere",
+    "slug": "lumiere-skin-clinic",
+    "title": "Lumière Skin Clinic",
+    "category": "Health",
+    "location": "Vancouver",
+    "tag": "Aesthetics Clinic · Vancouver",
+    "result": "Brand-new website helped secure 4.9★ Google rating and tripled online bookings in 60 days.",
+    "services": "Design + Dev + Lead Gen",
+    "featured": true
+  },
+  {
+    "id": "trueclean",
+    "slug": "trueclean-pro",
+    "title": "TrueClean Pro",
+    "category": "Cleaning",
+    "location": "Calgary",
+    "tag": "Cleaning Service · Calgary",
+    "result": "Redesign + local SEO resulted in Page 1 ranking for 12 local keywords within 90 days.",
+    "services": "Redesign + Local SEO",
+    "featured": true
+  },
+  {
+    "id": "sparkelectric",
+    "slug": "spark-electric",
+    "title": "SparkElectric",
+    "category": "Trades",
+    "location": "Ottawa",
+    "tag": "Electrical · Ottawa",
+    "result": "Complete website build with lead gen system delivered +220% more quote requests in first quarter.",
+    "services": "Website + Lead Gen + SEO",
+    "featured": false
+  },
+  {
+    "id": "glosssalon",
+    "slug": "gloss-salon",
+    "title": "Gloss Salon",
+    "category": "Beauty",
+    "location": "Montreal",
+    "tag": "Hair Salon · Montreal",
+    "result": "New brand-aligned website drove +156% online bookings and 5.0★ Google rating within 2 months.",
+    "services": "Design + Dev + Maintenance",
+    "featured": false
+  },
+  {
+    "id": "fixright",
+    "slug": "fixright-roofing",
+    "title": "FixRight Roofing",
+    "category": "Trades",
+    "location": "Edmonton",
+    "tag": "Roofing · Edmonton",
+    "result": "Full rebuild with SEO strategy led to Page 1 for 8 keywords and 3× more leads.",
+    "services": "Redesign + SEO + Speed Opt",
+    "featured": false
+  }
+]
