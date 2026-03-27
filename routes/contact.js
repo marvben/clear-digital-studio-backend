@@ -45,8 +45,8 @@ router.post('/', async (req, res) => {
       }
     }
 
-    const toEmail = process.env.CONTACT_TO_EMAIL || 'hello@cleardigitalstudio.ca';
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Clear Digital Studio <noreply@cleardigitalstudio.ca>';
+    const toEmail = process.env.CONTACT_TO_EMAIL || 'hello@cleardigitalstudio.com';
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Clear Digital Studio <noreply@cleardigitalstudio.com>';
 
     const htmlBody = `
       <h2>New Contact Form Submission</h2>
@@ -59,7 +59,7 @@ router.post('/', async (req, res) => {
         <tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #eee;">Budget</td><td style="padding:8px 12px;border-bottom:1px solid #eee;">${escapeHtml(budget || 'N/A')}</td></tr>
         <tr><td style="padding:8px 12px;font-weight:bold;border-bottom:1px solid #eee;">Message</td><td style="padding:8px 12px;border-bottom:1px solid #eee;">${escapeHtml(message).replace(/\n/g, '<br>')}</td></tr>
       </table>
-      <p style="margin-top:16px;color:#999;font-size:12px;">Sent from cleardigitalstudio.ca contact form at ${new Date().toISOString()}</p>
+      <p style="margin-top:16px;color:#999;font-size:12px;">Sent from cleardigitalstudio.com contact form at ${new Date().toISOString()}</p>
     `;
 
     if (process.env.RESEND_API_KEY) {
